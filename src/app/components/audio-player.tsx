@@ -22,7 +22,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ artist, song }) => {
       hlsRef.current = hls;
       hls.attachMedia(audio);
       hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-        hls.loadSource(`http://server.lugetech.com/stream/${artist}/${song}`);
+        hls.loadSource(`https://server.lugetech.com/stream/${artist}/${song}`);
       });
       audio.addEventListener("timeupdate", handleTimeUpdate);
       audio.addEventListener("loadedmetadata", handleLoadedMetadata);
