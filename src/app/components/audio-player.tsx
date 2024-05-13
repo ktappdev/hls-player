@@ -14,6 +14,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ artist, song }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const server = "https://server.lugetech.com/stream";
+  // const server = "http://localhost:8080/stream";
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -22,7 +24,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ artist, song }) => {
       hlsRef.current = hls;
       hls.attachMedia(audio);
       hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-        hls.loadSource(`https://server.lugetech.com/stream/${artist}/${song}`);
+        hls.loadSource(`${server}/${artist}/${song}`);
       });
       audio.addEventListener("timeupdate", handleTimeUpdate);
       audio.addEventListener("loadedmetadata", handleLoadedMetadata);
@@ -69,7 +71,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ artist, song }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-between p-4 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+    <div className="flex flex-col items-center w-full justify-between p-4 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
       <div className="flex items-center mb-4">
         <button onClick={handlePlayPause} className="mr-4 focus:outline-none">
           {isPlaying ? (
