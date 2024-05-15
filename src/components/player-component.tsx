@@ -16,7 +16,7 @@ export function PlayerComponent({ artist, song }: PlayerComponentProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   // const server = "http://localhost:8080/stream";
-  const server = "https://server.lugetech/stream";
+  const server = "https://server.lugetech.com/stream";
   const [volume, setVolume] = useState(50);
 
   useEffect(() => {
