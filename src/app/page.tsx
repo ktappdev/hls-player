@@ -1,6 +1,6 @@
-import Image from "next/image";
+// import Image from "next/image";
 import AudioPlayer from "./components/audio-player";
-import { Player } from "@/components/player";
+// import { Player } from "@/components/player";
 import { PlayerComponent } from "@/components/player-component";
 
 export default function Home() {
