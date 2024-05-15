@@ -14,8 +14,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ artist, song }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  // const server = "https://server.lugetech.com/stream";
-  const server = "http://localhost:8080/stream";
+  const server = "https://server.lugetech.com/stream";
+  // const server = "http://localhost:8080/stream";
 
   useEffect(() => {
     const audio = audioRef.current;
