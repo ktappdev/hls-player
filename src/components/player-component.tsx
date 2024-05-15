@@ -17,6 +17,7 @@ export function PlayerComponent({ artist, song }: PlayerComponentProps) {
   const [duration, setDuration] = useState(0);
   const server = "http://localhost:8080/stream";
   const [volume, setVolume] = useState(50);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
