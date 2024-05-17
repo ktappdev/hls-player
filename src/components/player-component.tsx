@@ -119,7 +119,7 @@ export function PlayerComponent({ artist, song }: PlayerComponentProps) {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
-
+  //
   return (
     <div className="flex flex-col items-center justify-center bg-gray-900 text-white">
       <div className="w-full max-w-md rounded-lg overflow-hidden shadow-lg">
