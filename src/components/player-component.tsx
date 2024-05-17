@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { SongMetadata } from "@/lib/interfaces";
 
 interface PlayerComponentProps {
   artist: string;
@@ -15,21 +16,57 @@ export function PlayerComponent({ artist, song }: PlayerComponentProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  // const server = "http://localhost:8080/stream";
-  const server = "https://server.lugetech.com/stream";
+  const [metadata, setMetadata] = useState<SongMetadata | null>(null);
+  const server = "http://localhost:8080";
+  // const server = "https://server.lugetech.com";
   const [volume, setVolume] = useState(50);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
-      const hls = new Hls();
+      const hls = new Hls({
+        autoStartLoad: true,
+        startPosition: -1,
+        debug: false,
+        enableWorker: true,
+        lowLatencyMode: true,
+        backBufferLength: 60 * 1.5,
+        abrBandWidthFactor: 0.95,
+        abrBandWidthUpFactor: 0.7,
+        abrMaxWithRealBitrate: true,
+        maxLoadingDelay: 4,
+        minAutoBitrate: 1,
+        maxStarvationDelay: 2,
+      });
       hlsRef.current = hls;
+      // Print the index data when the manifest is parsed
+      hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+        console.log("Manifest parsed. Index data:", data);
+      });
+
       hls.attachMedia(audio);
       hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-        hls.loadSource(`${server}/${artist}/${song}`);
+        console.log(`${server}/stream/${artist}/${song}`);
+        hls.loadSource(`${server}/stream/${artist}/${song}`);
+      });
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        // audio.play();
       });
       audio.addEventListener("timeupdate", handleTimeUpdate);
       audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+      //NOTE: fetch the metadata non blocking
+      const fetchMetadata = async () => {
+        try {
+          const response = await fetch(`${server}/getmetadata/1`);
+          const data = await response.json();
+          setMetadata(data.metadata);
+          console.log(data.metadata);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      fetchMetadata();
       return () => {
         if (hlsRef.current) {
           hlsRef.current.destroy();
@@ -86,9 +123,12 @@ export function PlayerComponent({ artist, song }: PlayerComponentProps) {
   return (
     <div className="flex flex-col items-center justify-center bg-gray-900 text-white">
       <div className="w-full max-w-md rounded-lg overflow-hidden shadow-lg">
-        <div className="p-6 space-y-4">
-          <h2 className="text-2xl font-bold">{song}</h2>
-          <p className="text-gray-400">{artist}</p>
+        <div className="p-6 space-y-2">
+          <div className="flex flex-col gap-1 ">
+            <h2 className="text-2xl font-bold leading-7">{metadata?.title}</h2>
+            <p className="text-gray-400 leading-3">{metadata?.artist}</p>
+            <p className="text-gray-400 text-xs">{metadata?.album}</p>
+          </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button size="icon" variant="ghost" onClick={handlePlayPause}>

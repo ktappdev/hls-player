@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
+import { SongMetadata } from "@/lib/interfaces";
 
 interface AudioPlayerProps {
   artist: string;
@@ -14,6 +15,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ artist, song }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [metadata, setMetadata] = useState<SongMetadata | null>(null);
   const server = "https://server.lugetech.com/stream";
   // const server = "http://localhost:8080/stream";
 
@@ -28,6 +30,19 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ artist, song }) => {
       });
       audio.addEventListener("timeupdate", handleTimeUpdate);
       audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+
+      //NOTE: fetch the metadata non blocking
+      const fetchMetadata = async () => {
+        try {
+          const response = await fetch(`${server}/getMetadata/1}`);
+          const data = (await response.json()) as SongMetadata;
+          setMetadata(data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+      fetchMetadata();
+
       return () => {
         if (hlsRef.current) {
           hlsRef.current.destroy();
@@ -103,8 +118,9 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ artist, song }) => {
           )}
         </button>
         <div className="text-white">
-          <div className="text-xl font-bold">{song}</div>
-          <div className="text-sm">{artist}</div>
+          <div className="text-xl font-bold">{metadata?.title}</div>
+          <div className="text-sm">{metadata?.artist}</div>
+          <div className="text-xs">{metadata?.album}</div>
         </div>
       </div>
       <div className="w-full">
